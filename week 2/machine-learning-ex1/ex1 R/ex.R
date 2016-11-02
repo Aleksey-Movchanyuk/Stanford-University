@@ -1,6 +1,24 @@
+## Machine Learning Online Class - Exercise 1: Linear Regression
+
+#  Instructions
+#  ------------
+  # 
+#  This file contains code that helps you get started on the
+#  linear exercise. 
+#
+# x refers to the population size in 10,000s
+# y refers to the profit in $10,000s
+#
 
 
-setwd("/Users/aleksey/Documents/MOOC/Coursera/ML/Stanford University/week 2/machine-learning-ex1/ex1 R")
+## Initialization
+
+if(.Platform$OS.type == "windows") {
+  setwd("c:/Users/omovchaniuk/Documents/GitHub/Stanford-University/week 2/machine-learning-ex1/ex1 R")
+} else {
+  setwd("/Users/aleksey/Documents/MOOC/Coursera/ML/Stanford University/week 2/machine-learning-ex1/ex1 R")
+}
+
 source("warmUpExercise.R")
 
 # ==================== Part 1: Basic Function ====================
