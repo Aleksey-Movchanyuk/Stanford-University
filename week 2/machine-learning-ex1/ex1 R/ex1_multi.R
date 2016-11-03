@@ -29,6 +29,7 @@ source("featureNormalize.R")
 X_norm <- featureNormalize(X)
   
 # Add intercept term to X
+X <- cbind(matrix(1, nrow(X)), X) 
 X_norm <- cbind(matrix(1, nrow(X_norm)), X_norm) 
 
 
@@ -56,13 +57,17 @@ X_norm <- cbind(matrix(1, nrow(X_norm)), X_norm)
 # Hint: At prediction, make sure you do the same feature normalization.
 #
 
+source("gradientDescentMulti.R")
 
 # Choose some alpha value
 alpha <- 0.01;
-num_iters <- 400;
+iterations <- 400;
 
 
 # Init Theta and Run Gradient Descent 
 theta <- matrix(0, 3); 
 
+# run gradient descent
+theta <- gradientDescentMulti(X_norm, y, theta, alpha, iterations);
 
+theta2 <- gradientDescentMulti(X, y, theta, alpha, iterations);
