@@ -47,5 +47,28 @@ m <- nrow(X);
 sel <- sample(nrow(X));
 sel <- sel[1:100];
 
-source("displayData")
-displayData(X)
+source("displayData.R")
+displayData(X[sel,])
+
+
+## ================ Part 2: Loading Parameters ================
+# In this part of the exercise, we load some pre-initialized 
+# neural network parameters.
+
+print('Loading Saved Neural Network Parameters ...')
+
+# Load the weights into variables Theta1 and Theta2
+weights <- readMat("../ex4/ex4weights.mat");
+Theta1 <- weights$Theta1
+Theta2 <- weights$Theta2
+
+# Unroll parameters 
+nn_params = matrix(c(Theta1, Theta2));
+
+
+# Weight regularization parameter (we set this to 0 here).
+lambda <- 0;
+
+source("nnCostFunction.R")
+J <- nnCostFunction(nn_params, input_layer_size, hidden_layer_size, num_labels, X, y, lambda);
+

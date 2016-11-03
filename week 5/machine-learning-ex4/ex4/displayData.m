@@ -48,6 +48,7 @@ for j = 1:display_rows
 	end
 end
 
+
 % Display Image
 h = imagesc(display_array, [-1 1]);
 
