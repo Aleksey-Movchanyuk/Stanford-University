@@ -18,9 +18,9 @@
 
 ## Initialization
 if(.Platform$OS.type == "windows") {
-        setwd("c:/Users/omovchaniuk/Documents/GitHub/Stanford-University/week 4/machine-learning-ex3/ex3-R")
+        setwd("c:/Users/omovchaniuk/Documents/GitHub/Stanford-University/week-04/machine-learning-ex3/ex3-R")
 } else {
-        setwd("/Users/aleksey/Documents/MOOC/Coursera/ML/Stanford-University/week 4/machine-learning-ex3/ex3-R")
+        setwd("/Users/aleksey/Documents/MOOC/Coursera/ML/Stanford-University/week-04/machine-learning-ex3/ex3-R")
 }
 
 ## Setup the parameters you will use for this part of the exercise
