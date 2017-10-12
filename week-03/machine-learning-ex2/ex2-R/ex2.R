@@ -20,7 +20,7 @@
 rm(list=ls())
 
 if(.Platform$OS.type == "windows") {
-        setwd("c:/Users/omovchaniuk/Documents/GitHub/Stanford-University/week-03/machine-learning-ex2/ex2-R")
+        setwd("c:/Users/omovchaniuk/Documents/Stanford-University/week-03/machine-learning-ex2/ex2-R")
 } else {
         setwd("/Users/aleksey/Documents/MOOC/Coursera/ML/Stanford-University/week-03/machine-learning-ex2/ex2-R")
 }
@@ -30,8 +30,7 @@ if(.Platform$OS.type == "windows") {
 #  contains the label.
 
 data <- read.table(file="../ex2/ex2data1.txt", sep=",", dec=".");
-colnames(data) <- c("Exam 1 score", "Exam 2 score", "Admitted flag")
-X <- data[,1:2]; 
+X <- matrix(unlist(data), ncol=3)[,1:2]; 
 y <- data[,3];
 
 
@@ -53,21 +52,24 @@ ggplot(data,
         scale_shape_identity()
 
 
-%% ============ Part 2: Compute Cost and Gradient ============
-        %  In this part of the exercise, you will implement the cost and gradient
-%  for logistic regression. You neeed to complete the code in 
-%  costFunction.m
+## ============ Part 2: Compute Cost and Gradient ============
+        #  In this part of the exercise, you will implement the cost and gradient
+#  for logistic regression. You neeed to complete the code in 
+#  costFunction.m
 
-%  Setup the data matrix appropriately, and add ones for the intercept term
-[m, n] = size(X);
+#  Setup the data matrix appropriately, and add ones for the intercept term
+m <- nrow(X);
+n <- ncol(X);
 
-% Add intercept term to x and X_test
-X = [ones(m, 1) X];
+# Add intercept term to x and X_test
+X <- cbind(matrix(1, m), X) 
 
-% Initialize fitting parameters
-initial_theta = zeros(n + 1, 1);
+# Initialize fitting parameters
+initial_theta <- matrix(0, n + 1); 
 
-% Compute and display initial cost and gradient
+
+# Compute and display initial cost and gradient
+source("costFunction.R")
 [cost, grad] = costFunction(initial_theta, X, y);
 
 fprintf('Cost at initial theta (zeros): %f\n', cost);
