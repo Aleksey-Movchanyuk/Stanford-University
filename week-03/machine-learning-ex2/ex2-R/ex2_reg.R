@@ -17,12 +17,19 @@
 #
 
 ## Initialization
-rm(list=ls())
-
 if(.Platform$OS.type == "windows") {
         setwd("c:/Users/omovchaniuk/Documents/Stanford-University/week-03/machine-learning-ex2/ex2-R")
 } else {
         setwd("/Users/aleksey/Documents/MOOC/Coursera/ML/Stanford-University/week-03/machine-learning-ex2/ex2-R")
+}
+
+rm(list=ls())
+sources <- c("costFunctionReg.R","sigmoid.R",
+             "plotData.R","plotDecisionBoundary.R",
+             "mapFeature.R","predict.R")
+for (i in 1:length(sources)) {
+        cat(paste("Loading ",sources[i],"\n"))
+        source(sources[i])
 }
 
 ## Load Data
@@ -33,16 +40,9 @@ data <- read.table(file="../ex2/ex2data2.txt", sep=",", dec=".");
 X <- matrix(unlist(data), ncol=3)[,1:2]; 
 y <- data[,3];
 
-library(ggplot2) 
-ggplot(data, 
-       aes(x = data[,1], 
-           y = data[,2], 
-           colour = factor(data[,3], levels=c(0,1), labels=c('Fail','Pass')) 
-       )) +
-        # Put some labels and Legend
-        labs(x = "Microchip Test 1", y = "Microchip Test 2", colour = "Test Result") + 
-        geom_point( aes(shape = data[,3]) ) +
-        scale_shape_identity()
+plotData(X, y,axLables = c('Microchip Test 1','Microchip Test 2'),
+         legLabels = c("y = 1","y = 0"))
+
 
 ## =========== Part 1: Regularized Logistic Regression ============
         #  In this part, you are given a dataset with data points that are not
@@ -58,7 +58,6 @@ ggplot(data,
 
 # Note that mapFeature also adds a column of ones for us, so the intercept
 # term is handled
-source("mapFeature.R")
 X <- mapFeature(X[,1], X[,2]);
 
 # Initialize fitting parameters
@@ -70,116 +69,46 @@ lambda <- 1;
 
 # Compute and display initial cost and gradient for regularized logistic
 # regression
-source("costFunctionReg.R")
 cost <- costFunctionReg(initial_theta, X, y, lambda);
 
 sprintf('Cost at initial theta (zeros): %f', cost);
 
-## ============ Part 2: Compute Cost and Gradient ============
-#  In this part of the exercise, you will implement the cost and gradient
-#  for logistic regression. You neeed to complete the code in 
-#  costFunction.m
-
-#  Setup the data matrix appropriately, and add ones for the intercept term
-m <- nrow(X);
-n <- ncol(X);
-
-# Add intercept term to x and X_test
-X <- cbind(matrix(1, m), X) 
+## ============= Part 2: Regularization and Accuracies =============
+        #  Optional Exercise:
+        #  In this part, you will get to try different values of lambda and 
+#  see how regularization affects the decision coundart
+#
+#  Try the following values of lambda (0, 1, 10, 100).
+#
+#  How does the decision boundary change when you vary lambda? How does
+#  the training set accuracy vary?
+#
 
 # Initialize fitting parameters
-initial_theta <- matrix(0, n + 1); 
+n <- ncol(X);
+initial_theta <- matrix(0, n); 
 
+# Set regularization parameter lambda to 1 (you should vary this)
+lambda <- 1;
 
-# Compute and display initial cost and gradient
-source("costFunction.R")
-cost <- costFunction(initial_theta, X, y);
+# Optimize
+optimRes <- optim(par = initial_theta, 
+                  fn = costFunctionReg(X,y,lambda), 
+                  gr = gradReg(X,y,lambda), 
+                  method="BFGS", 
+                  control = list(maxit = 400))
 
-sprintf('Cost at initial theta (zeros): %f', cost);
+theta <- optimRes$par
+J <- optimRes$value
 
+# Plot decision Boundary
 
-# =================== Part 3: Gradient descent ===================
-source("gradientDescent.R")
+plotDecisionBoundary(theta, X, y, axLables = c('Microchip Test 1','Microchip Test 2'),
+                     legLabels = c("y = 1","y = 0"))
 
-# Some gradient descent settings
-iterations <- 15000;
-alpha <- 0.002;
-
-# run gradient descent
-theta <- gradientDescent(X, y, initial_theta, alpha, iterations);
-
-cost <- costFunction(theta, X, y);
-
-# Print theta to screen
-sprintf('Cost at theta found by gradient descent: %f', cost);
-sprintf('theta:');
-sprintf('%f', theta);
-
-
-
-## ============= Part 4: Optimizing using optim  =============
-#  In this exercise, you will use a built-in function (optim) to find the
-#  optimal parameters theta.
-
-cost <- function(theta)
-{
-        m <- nrow(X)
-        htheta <- sigmoid(X %*% theta);
-        J = 1 / m * sum(-y %*% log(htheta) - (1 - y) %*% log(1 - htheta));
-        return(J)
-}
-theta_optim <- optim(par=initial_theta,fn=cost)
-
-# Print theta to screen
-sprintf('Cost at theta found by optim: %f', theta_optim$par);
-sprintf('theta:');
-sprintf('%f', theta_optim$par);
-
-
-theta <- theta_optim$par
-
-## Plot Boundary
-
-# Only need 2 points to define a line, so choose two endpoints
-plot_x <- c(min(X[,2]),  max(X[,2]));
-
-# Calculate the decision boundary line
-plot_y <- (-1/theta[3])*(theta[2]*plot_x + theta[1]);
-
-library(ggplot2) 
-ggplot(data, 
-       aes(x = X[,2], 
-           y = X[,3], 
-           colour = factor(y, levels=c(0,1), labels=c('Admitted','Not Admitted')) 
-       )) +
-        # Put some labels and Legend
-        labs(x = "Exam 1 Score", y = "Exam 2 Score", colour = "Admitted Flag") + 
-        geom_point( aes(shape = data[,3]) ) +
-        scale_shape_identity() +
-        geom_line(aes(x=plot_x, y=plot_y), color='blue')
-
-
-## ============== Part 5: Predict and Accuracies ==============
-#  After learning the parameters, you'll like to use it to predict the outcomes
-#  on unseen data. In this part, you will use the logistic regression model
-#  to predict the probability that a student with score 45 on exam 1 and 
-#  score 85 on exam 2 will be admitted.
-#
-#  Furthermore, you will compute the training and test set accuracies of 
-#  our model.
-#
-#  Your task is to complete the code in predict.m
-
-#  Predict probability for a student with score 45 on exam 1 
-#  and score 85 on exam 2 
-
-prob <- sigmoid(c(1, 45, 85) %*% theta);
-sprintf('For a student with scores 45 and 85, we predict an admission probability of %f', prob);
 
 # Compute accuracy on our training set
-source("predict.R")
 p <- predict(theta, X);
 
-sprintf('Train Accuracy: %f percent', mean(as.double(p[] == y[])) * 100);
-
+cat(sprintf('Train Accuracy: %f percent', mean(as.double(p[] == y[])) * 100))
 
