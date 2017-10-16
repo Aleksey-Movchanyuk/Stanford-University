@@ -24,6 +24,7 @@ if(.Platform$OS.type == "windows") {
 }
 
 rm(list=ls())
+
 sources <- c("costFunctionReg.R","sigmoid.R",
              "plotData.R","plotDecisionBoundary.R",
              "mapFeature.R","predict.R")

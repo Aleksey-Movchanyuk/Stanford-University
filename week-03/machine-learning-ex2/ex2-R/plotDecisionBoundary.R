@@ -19,7 +19,7 @@ plotDecisionBoundary <-
                 if (dim(X)[2] <= 3)
                 {
                         # Only need 2 points to define a line, so choose two end points
-                        plot_x <- cbind(min(X[,2] - 2), max(X[,2] + 2))
+                        plot_x <- cbind(min(X[,2] ), max(X[,2] + 2))
                         # Calculate the decision boundary line
                         plot_y <- -1 / theta[3] * (theta[2] * plot_x + theta[1])
                         

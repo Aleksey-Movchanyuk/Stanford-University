@@ -1,10 +1,3 @@
-#gradient
-grad <- function(X, y, theta){
-        m = nrow(X)
-        hx = sigmoid(X %*% theta)
-        
-        return ((1/m) * (t(X) %*% (hx - y)));
-}
 
 gradientDescent <- function(X, y, theta, alpha, iterations) {
         

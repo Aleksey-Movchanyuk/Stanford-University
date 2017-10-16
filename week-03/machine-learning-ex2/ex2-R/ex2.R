@@ -17,12 +17,21 @@
 #
 
 ## Initialization
-rm(list=ls())
-
 if(.Platform$OS.type == "windows") {
         setwd("c:/Users/omovchaniuk/Documents/Stanford-University/week-03/machine-learning-ex2/ex2-R")
 } else {
         setwd("/Users/aleksey/Documents/MOOC/Coursera/ML/Stanford-University/week-03/machine-learning-ex2/ex2-R")
+}
+
+rm(list=ls())
+
+sources <- c("costFunction.R","sigmoid.R",
+             "gradientDescent.R","plotData.R",
+             "plotDecisionBoundary.R","predict.R")
+
+for (i in 1:length(sources)) {
+        cat(paste("Loading ",sources[i],"\n"))
+        source(sources[i])
 }
 
 ## Load Data
@@ -38,18 +47,9 @@ y <- data[,3];
         #  We start the exercise by first plotting the data to understand the 
 #  the problem we are working with.
 
-print('Plotting data with + indicating (y = 1) examples and o indicating (y = 0) examples.\n');
+cat(print('Plotting data with + indicating (y = 1) examples and o indicating (y = 0) examples.\n'));
 
-library(ggplot2) 
-ggplot(data, 
-       aes(x = data[,1], 
-           y = data[,2], 
-           colour = factor(data[,3], levels=c(0,1), labels=c('Admitted','Not Admitted')) 
-       )) +
-        # Put some labels and Legend
-        labs(x = "Exam 1 Score", y = "Exam 2 Score", colour = "Admitted Flag") + 
-        geom_point( aes(shape = data[,3]) ) +
-        scale_shape_identity()
+plotData(X, y)
 
 
 ## ============ Part 2: Compute Cost and Gradient ============
@@ -69,28 +69,25 @@ initial_theta <- matrix(0, n + 1);
 
 
 # Compute and display initial cost and gradient
-source("costFunction.R")
-cost <- costFunction(initial_theta, X, y);
+cost <- costFunction(X, y)(initial_theta);
 
-sprintf('Cost at initial theta (zeros): %f', cost);
+cat(sprintf('Cost at initial theta (zeros): %f', cost));
 
 
 # =================== Part 3: Gradient descent ===================
-source("gradientDescent.R")
-
 # Some gradient descent settings
-iterations <- 15000;
-alpha <- 0.002;
+#iterations <- 15000;
+#alpha <- 0.002;
 
 # run gradient descent
-theta <- gradientDescent(X, y, initial_theta, alpha, iterations);
+#theta <- gradientDescent(X, y, initial_theta, alpha, iterations);
 
-cost <- costFunction(theta, X, y);
+#cost <- costFunction(X, y)(theta);
 
 # Print theta to screen
-sprintf('Cost at theta found by gradient descent: %f', cost);
-sprintf('theta:');
-sprintf('%f', theta);
+#sprintf('Cost at theta found by gradient descent: %f', cost);
+#sprintf('theta:');
+#sprintf('%f', theta);
 
 
 
@@ -98,42 +95,20 @@ sprintf('%f', theta);
         #  In this exercise, you will use a built-in function (optim) to find the
 #  optimal parameters theta.
 
-cost <- function(theta)
-{
-        m <- nrow(X)
-        htheta <- sigmoid(X %*% theta);
-        J = 1 / m * sum(-y %*% log(htheta) - (1 - y) %*% log(1 - htheta));
-        return(J)
-}
-theta_optim <- optim(par=initial_theta,fn=cost)
+optimRes <- optim(par = initial_theta, fn = costFunction(X,y), gr = grad(X,y), 
+                  method="BFGS", control = list(maxit = 400))
+
+theta <- optimRes$par
+cost <- optimRes$value
 
 # Print theta to screen
-sprintf('Cost at theta found by optim: %f', theta_optim$par);
+sprintf('Cost at theta found by optim: %f', theta);
 sprintf('theta:');
-sprintf('%f', theta_optim$par);
+sprintf('%f', cost);
 
 
-theta <- theta_optim$par
-
-## Plot Boundary
-
-# Only need 2 points to define a line, so choose two endpoints
-plot_x <- c(min(X[,2]),  max(X[,2]));
-
-# Calculate the decision boundary line
-plot_y <- (-1/theta[3])*(theta[2]*plot_x + theta[1]);
-
-library(ggplot2) 
-ggplot(data, 
-       aes(x = X[,2], 
-           y = X[,3], 
-           colour = factor(y, levels=c(0,1), labels=c('Admitted','Not Admitted')) 
-       )) +
-        # Put some labels and Legend
-        labs(x = "Exam 1 Score", y = "Exam 2 Score", colour = "Admitted Flag") + 
-        geom_point( aes(shape = data[,3]) ) +
-        scale_shape_identity() +
-        geom_line(aes(x=plot_x, y=plot_y), color='blue')
+# Plot Boundary
+plotDecisionBoundary(theta, X, y)
 
 
 ## ============== Part 5: Predict and Accuracies ==============
@@ -154,7 +129,6 @@ prob <- sigmoid(c(1, 45, 85) %*% theta);
 sprintf('For a student with scores 45 and 85, we predict an admission probability of %f', prob);
 
 # Compute accuracy on our training set
-source("predict.R")
 p <- predict(theta, X);
 
 sprintf('Train Accuracy: %f percent', mean(as.double(p[] == y[])) * 100);
