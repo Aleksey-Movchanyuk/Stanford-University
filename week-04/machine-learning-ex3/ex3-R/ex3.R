@@ -23,6 +23,15 @@ if(.Platform$OS.type == "windows") {
         setwd("/Users/aleksey/Documents/MOOC/Coursera/ML/Stanford-University/week-04/machine-learning-ex3/ex3-R")
 }
 
+rm(list=ls())
+sources <- c("displayData.R","lrCostFunction.R",
+             "oneVsAll.R","predict.R",
+             "predictOneVsAll.R","sigmoid.R")
+for (i in 1:length(sources)) {
+        cat(paste("Loading ",sources[i],"\n"))
+        source(sources[i])
+}
+
 ## Setup the parameters you will use for this part of the exercise
 input_layer_size  <- 400;  # 20x20 Input Images of Digits
 num_labels <- 10;          # 10 labels, from 1 to 10   
@@ -56,26 +65,24 @@ displayData(X[sel,]);
 print('Program paused. Press enter to continue.\n');
 
 
-## ============ Part 2: Vectorize Logistic Regression ============
-        #  In this part of the exercise, you will reuse your logistic regression
-#  code from the last exercise. You task here is to make sure that your
+## ------------ Part 2: Vectorize Logistic Regression ------------
+#  In this part of the exercise, you will reuse your logistic regression
+#  code from the last exercise. Your task here is to make sure that your
 #  regularized logistic regression implementation is vectorized. After
 #  that, you will implement one-vs-all classification for the handwritten
 #  digit dataset.
 #
 
-print('\nTraining One-vs-All Logistic Regression...\n')
+cat(sprintf('\nTraining One-vs-All Logistic Regression...\n'))
 
-lambda <- 0.1;
-[all_theta] <- oneVsAll(X, y, num_labels, lambda);
+lambda <- 0.1
+all_theta <- oneVsAll(X, y, num_labels, lambda)
 
-print('Program paused. Press enter to continue.\n');
+cat(sprintf('Program paused. Press enter to continue.\n'))
+line <- readLines(con = stdin(),1)
 
 
+## ----------------- Part 3: Predict for One-Vs-All -----------------
+pred <- predictOneVsAll(all_theta, X)
 
-## ================ Part 3: Predict for One-Vs-All ================
-        #  After ...
-pred <- predictOneVsAll(all_theta, X);
-
-print('\nTraining Set Accuracy: %f\n', mean(double(pred == y)) * 100);
-
+cat(sprintf('\nTraining Set Accuracy: %f\n', mean(pred == y) * 100))
