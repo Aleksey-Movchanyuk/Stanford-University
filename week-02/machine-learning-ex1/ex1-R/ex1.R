@@ -12,11 +12,14 @@
 
 
 ## Initialization
+if (!require(ggplot2)) install.packages('ggplot2')
+library(ggplot2)
+
 
 if(.Platform$OS.type == "windows") {
-  setwd("c:/Users/omovchaniuk/Documents/GitHub/Stanford-University/week 2/machine-learning-ex1/ex1-R»)
+  setwd("C:/Users/Administrator/Documents/MOOC/Stanford-University/week-02/machine-learning-ex1/ex1-R")
 } else {
-  setwd("/Users/aleksey/Documents/MOOC/Coursera/ML/Stanford University/week 2/machine-learning-ex1/ex1-R»)
+  setwd("/Users/aleksey/Documents/MOOC/Coursera/ML/Stanford University/week-02/machine-learning-ex1/ex1-R")
 }
 
 source("warmUpExercise.R")
